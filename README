@@ -4,11 +4,11 @@ This repository has two programs for importing wav file to SPICE and
 exporting the output as a wav file.
 
 1. wavtospice.py
-- This tool converts a wav file with a list of values, which can be read
+- This tool converts a wav file to a list of times and voltages, which can be read
   using ngspices file source. If wav file has multiple channels only the values
   of the first channel are returned.
 
-- Usage: python wavtospice.py <input file> <output file>
+- Usage: python wavtospice.py <input file> <output file> [--vrange voltage]
 
 - Ngspice must have been compiled with xspice support. File source can be used
   like follows:
@@ -27,7 +27,7 @@ exporting the output as a wav file.
 - Use "wrdata" command in the spice netlist to save data to file.
   Run the ngspice in batch mode using the command line flag -b.
 
-- Usage: python spicetowav.py <SPICE output file> <Output wav> [clipping voltage].
+- Usage: python spicetowav.py <SPICE output file> <Output wav> [--vrange voltage]
   Clipping voltage is optional and if it's unspecified wav is written
   with maximum amplitude such that clipping doesn't occur.
 

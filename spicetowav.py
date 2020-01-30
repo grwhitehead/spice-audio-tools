@@ -37,11 +37,12 @@ def lin_interp(x0, x1, y0, y1, x):
     return y0 + (x - x0) * (y1 - y0) / (x1 - x0)
 
 
-def write_wav(times, voltages, filename, clipping):
+def write_wav(times, voltages, filename, vrange):
 	with wave.open(filename, 'w') as w:
 		w.setparams((1, 2, SAMPLING_RATE, 0, 'NONE', 'not compressed'))
-		m = max(max(voltages), -min(voltages))
-		vrange = clipping if clipping else m
+
+		if not vrange:
+			vrange = max(max(voltages), -min(voltages))
 
 		values = bytes([])
 		t = 0.0
@@ -66,9 +67,10 @@ if __name__ == "__main__":
 		help="Specify file with spice output")
 	parser.add_argument("wav_file",
 		help="Specify filename for wav data")
-	parser.add_argument("--clipping", dest='clipping',
+	parser.add_argument("--vrange", "--clipping", dest='vrange',
 			default=0, type=float)
 	args = parser.parse_args()
 
 	times, voltages = parse_output(args.spice_output)
-	write_wav(times, voltages, args.wav_file, args.clipping)
+
+	write_wav(times, voltages, args.wav_file, args.vrange)

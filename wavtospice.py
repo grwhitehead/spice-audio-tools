@@ -9,7 +9,7 @@ import argparse
 
 formats = (None, '<b', '<h', '<i', '<i')
 
-def read_wav(filename):
+def read_wav(filename, vrange):
 	waveFile = wave.open(filename, 'r')
 	data = []
 	t = 0
@@ -35,11 +35,9 @@ def read_wav(filename):
 			raise ValueError('Unsupported sample width')
 
 		temp = struct.unpack_from(fmt, waveData)
-		data.append((t * timestep, float(temp[0]) / (2**(8 * sampwidth - 1) - 1)))
+		data.append((t * timestep, vrange * float(temp[0]) / (2**(8 * sampwidth - 1) - 1)))
 		t += 1
 
-	vrms = math.sqrt(1.0 / (len(data[1])) * sum(i**2 for i in data[1]))
-	print('RMS voltage: %s' % vrms)
 	return data
 
 
@@ -52,7 +50,12 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument("wav_file", help="Specify wav file as input")
 	parser.add_argument("spice_file", help="Specify output filename for spice data")
+	parser.add_argument("--vrange", dest='vrange', default=1, type=float)
 	args = parser.parse_args()
 
-	data = read_wav(args.wav_file)
+	data = read_wav(args.wav_file, args.vrange)
+
+	print('PP voltage: %s' % (max(i[1] for i in data) - min(i[1] for i in data)))
+	print('RMS voltage: %s' % math.sqrt(sum(i[1]**2 for i in data)/len(data)))
+
 	write_spice(data, args.spice_file)
