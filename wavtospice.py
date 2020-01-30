@@ -35,7 +35,7 @@ def read_wav(filename):
 			raise ValueError('Unsupported sample width')
 
 		temp = struct.unpack_from(fmt, waveData)
-		data.append((t * timestep, float(temp[0]) / (2**(8 * sampwidth) - 1)))
+		data.append((t * timestep, float(temp[0]) / (2**(8 * sampwidth - 1) - 1)))
 		t += 1
 
 	vrms = math.sqrt(1.0 / (len(data[1])) * sum(i**2 for i in data[1]))
